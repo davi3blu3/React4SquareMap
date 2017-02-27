@@ -18,15 +18,16 @@ var Results = React.createClass({
   handleSearch: function(address){
 		var that = this;
 
+
 		this.setState({
 			isLoading: true,
 			errorMessage: undefined,
 			locStr: "25.7616798,-80.19179020000001",
       address: undefined
 		});
-
     Geocode.geocodeAddress(address).then(function(locStr){
-      that.setState({
+      console.log(locStr);
+      this.setState({
         address: address,
         locStr: locStr,
         isLoading: false
@@ -41,11 +42,11 @@ var Results = React.createClass({
 
   componentDidMount: function(){
 
-    var address = this.props.location.query.location;
+    var address = this.props.address;
 
     if(address && address.length > 0){
       this.handleSearch(address);
-      window.location.hash = '#/';
+      window.address.hash = '#/';
     }
   },
   render: function() {
@@ -55,7 +56,7 @@ var Results = React.createClass({
 		if(isLoading){
 			return <h3 className="text-center">Fetching Location...</h3>;
 		} else if (address) {
-			return <Results address={locStr} />;
+			return <Results address={address} />;
 		}
 	}
   return (

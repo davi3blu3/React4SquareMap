@@ -5,7 +5,7 @@ import Places from './components/Places'
 import superagent from 'superagent'
 import Search from './components/Search.jsx'
 import Results from './components/Results.jsx'
-
+import Geocode from './components/Geocode.jsx'
 
 class App extends Component {
   constructor(){
@@ -15,15 +15,15 @@ class App extends Component {
     }
   }
   componentDidMount(){
-
-      const location = {
-        //default lat and long is West Palm Beach
-        lat: 26.715347,
-        lng: -80.053325
-      }
+      // 
+      // const location = {
+      //   //default lat and long is West Palm Beach
+      //   lat: 26.715347,
+      //   lng: -80.053325
+      // }
     console.log('componentDidMount')
-
     const url = `https://api.foursquare.com/v2/venues/search?v=20161016&ll=${locStr}&client_id=XT1QFLKB4I2NPDXPKT1SUVXLOKQKPC4IDMKCHJIKRZEH0PHX&client_secret=PVWXPB34V1NTB1P41GHN1IHAS34RYOHCOIWT5YIFWROEY3LC`
+
     console.log('superagent' + locStr);
     superagent
       .get(url)

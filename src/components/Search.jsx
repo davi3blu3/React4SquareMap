@@ -4,10 +4,10 @@ var Search = React.createClass({
 	onFormSubmit: function(e){
 		e.preventDefault();
 
-		var address = this.refs.location.value;
+		var address = this.refs.address.value;
 
 		if(address.length > 0) {
-			this.refs.location.value= '';
+			this.refs.address.value= '';
 			this.props.onSearch(address);
 		}
 	},
@@ -15,7 +15,7 @@ var Search = React.createClass({
 		return (
 		<div>
 			<form onSubmit={this.onFormSubmit}>
-				<input type='search' placeholder='Search things to do by city' ref='location'/>
+				<input type='search' placeholder='Search things to do by city' ref='address'/>
 				<button className='button expanded hollow'>Get Busy</button>
 			</form>
 		</div>

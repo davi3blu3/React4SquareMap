@@ -76,6 +76,10 @@
 	
 	var _Results2 = _interopRequireDefault(_Results);
 	
+	var _Geocode = __webpack_require__(218);
+	
+	var _Geocode2 = _interopRequireDefault(_Geocode);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -103,14 +107,15 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 	
-	      var location = {
-	        //default lat and long is West Palm Beach
-	        lat: 26.715347,
-	        lng: -80.053325
-	      };
+	      // 
+	      // const location = {
+	      //   //default lat and long is West Palm Beach
+	      //   lat: 26.715347,
+	      //   lng: -80.053325
+	      // }
 	      console.log('componentDidMount');
-	
 	      var url = 'https://api.foursquare.com/v2/venues/search?v=20161016&ll=' + locStr + '&client_id=XT1QFLKB4I2NPDXPKT1SUVXLOKQKPC4IDMKCHJIKRZEH0PHX&client_secret=PVWXPB34V1NTB1P41GHN1IHAS34RYOHCOIWT5YIFWROEY3LC';
+	
 	      console.log('superagent' + locStr);
 	      _superagent2.default.get(url).query(null).set('Accept', 'text/json').end(function (error, response) {
 	
@@ -26314,10 +26319,10 @@
 		onFormSubmit: function onFormSubmit(e) {
 			e.preventDefault();
 	
-			var address = this.refs.location.value;
+			var address = this.refs.address.value;
 	
 			if (address.length > 0) {
-				this.refs.location.value = '';
+				this.refs.address.value = '';
 				this.props.onSearch(address);
 			}
 		},
@@ -26328,7 +26333,7 @@
 				React.createElement(
 					'form',
 					{ onSubmit: this.onFormSubmit },
-					React.createElement('input', { type: 'search', placeholder: 'Search things to do by city', ref: 'location' }),
+					React.createElement('input', { type: 'search', placeholder: 'Search things to do by city', ref: 'address' }),
 					React.createElement(
 						'button',
 						{ className: 'button expanded hollow' },
@@ -26375,9 +26380,9 @@
 	      locStr: "25.7616798,-80.19179020000001",
 	      address: undefined
 	    });
-	
 	    Geocode.geocodeAddress(address).then(function (locStr) {
-	      that.setState({
+	      console.log(locStr);
+	      this.setState({
 	        address: address,
 	        locStr: locStr,
 	        isLoading: false
@@ -26392,11 +26397,11 @@
 	
 	  componentDidMount: function componentDidMount() {
 	
-	    var address = this.props.location.query.location;
+	    var address = this.props.address;
 	
 	    if (address && address.length > 0) {
 	      this.handleSearch(address);
-	      window.location.hash = '#/';
+	      window.address.hash = '#/';
 	    }
 	  },
 	  render: function render() {
@@ -26415,7 +26420,7 @@
 	          'Fetching Location...'
 	        );
 	      } else if (address) {
-	        return React.createElement(Results, { address: locStr });
+	        return React.createElement(Results, { address: address });
 	      }
 	    }
 	    return React.createElement(
@@ -26455,7 +26460,7 @@
 	        var locStr = lat + ',' + lng;
 	        console.log('this is from geocoder' + locStr);
 	
-	        return locStr;
+	        return;
 	      }
 	    });
 	  }
