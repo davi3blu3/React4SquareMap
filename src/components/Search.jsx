@@ -1,57 +1,26 @@
-var React = require('react');
-
-
-var INITIAL_LOCATION = {
-  address: 'London, United Kingdom',
-  position: {
-    latitude: 51.5085300,
-    longitude: -0.1257400
-  }
-};
-
-var INITIAL_MAP_ZOOM_LEVEL = 8;
-
+const React = require('react');
 
 var Search = React.createClass({
+	onFormSubmit: function(e){
+		e.preventDefault();
 
-  handleFormSubmit: function (submitEvent) {
-    submitEvent.preventDefault();
+		var address = this.refs.location.value;
 
-    var address = this.searchInputElement.value;
-
-    this.props.geocodeAddress(address);
-  },
-
-
-
-  setSearchInputElementReference: function (inputReference) {
-    this.searchInputElement = inputReference;
-  },
-
-  render: function () {
-    return (
-      <div>
-            <form className="form-inline" onSubmit={this.handleFormSubmit}>
-
-
-                  <div className="form-group">
-                    <label className="sr-only" htmlFor="address">Address</label>
-                    <input type="text" className="form-control input-lg" id="address" placeholder="London, United Kingdom" ref={this.setSearchInputElementReference} required />
-                  </div>
-                  <button type="submit" className="btn btn-default btn-lg">
-                  </button>
-            </form>
-
-        <div className="row">
-          <div className="col-sm-12">
-{/*
-            {this.state.isGeocodingError ? <p className="bg-danger">Address not found.</p> : <p className="bg-info">{this.state.foundAddress}</p>} */}
-            <p> {this.props.locStr}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+		if(address.length > 0) {
+			this.refs.location.value= '';
+			this.props.onSearch(address);
+		}
+	},
+	render: function() {
+		return (
+		<div>
+			<form onSubmit={this.onFormSubmit}>
+				<input type='search' placeholder='Search things to do by city' ref='location'/>
+				<button className='button expanded hollow'>Get Busy</button>
+			</form>
+		</div>
+		);
+	}
 });
 
 module.exports = Search;

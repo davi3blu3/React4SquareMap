@@ -4,50 +4,15 @@ import Map from './components/Map'
 import Places from './components/Places'
 import superagent from 'superagent'
 import Search from './components/Search.jsx'
+import Results from './components/Results.jsx'
 
-
-
-
-
-let geocoder = new google.maps.Geocoder();
 
 class App extends Component {
   constructor(){
     super()
     this.state = {
       venues: [],
-      locStr: ""
     }
-  }
-
-    geocodeAddress(address) {
-
-
-    geocoder.geocode({ 'address': address }, function handleResults(results, status) {
-
-      if (status === google.maps.GeocoderStatus.OK) {
-
-        var lat = JSON.stringify(results[0].geometry.location.lat());
-        var lng = JSON.stringify(results[0].geometry.location.lng());
-        //
-        // this.state.locStr = `${lat},${lng}`
-
-        this.setState({
-          foundAddress: results[0].formatted_address,
-          isGeocodingError: false,
-          locStr: (results[0].geometry.location.lat() + "," + results[0].geometry.location.lng())
-        });
-        console.log(this.state.locStr)
-        return;
-      }
-
-      this.setState({
-        foundAddress: null,
-        isGeocodingError: true,
-
-      });
-
-    })
   }
   componentDidMount(){
 
@@ -58,9 +23,8 @@ class App extends Component {
       }
     console.log('componentDidMount')
 
-    var locStr = location.lat + "," + location.lng;
     const url = `https://api.foursquare.com/v2/venues/search?v=20161016&ll=${locStr}&client_id=XT1QFLKB4I2NPDXPKT1SUVXLOKQKPC4IDMKCHJIKRZEH0PHX&client_secret=PVWXPB34V1NTB1P41GHN1IHAS34RYOHCOIWT5YIFWROEY3LC`
-
+    console.log('superagent' + locStr);
     superagent
       .get(url)
       .query(null)
@@ -89,7 +53,7 @@ class App extends Component {
           <Map center={location} markers={this.state.venues}/>
         </div>
         <Places venues={this.state.venues} />
-        <Search locStr={this.state.locStr} geocodeAddress={this.geocodeAddress()}/>
+        <Results/>
       </div>
     )
   }

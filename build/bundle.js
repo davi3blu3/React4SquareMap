@@ -72,6 +72,10 @@
 	
 	var _Search2 = _interopRequireDefault(_Search);
 	
+	var _Results = __webpack_require__(217);
+	
+	var _Results2 = _interopRequireDefault(_Results);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -79,8 +83,6 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var geocoder = new google.maps.Geocoder();
 	
 	var App = function (_Component) {
 	  _inherits(App, _Component);
@@ -91,42 +93,12 @@
 	    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 	
 	    _this.state = {
-	      venues: [],
-	      locStr: ""
+	      venues: []
 	    };
 	    return _this;
 	  }
 	
 	  _createClass(App, [{
-	    key: 'geocodeAddress',
-	    value: function geocodeAddress(address) {
-	
-	      geocoder.geocode({ 'address': address }, function handleResults(results, status) {
-	
-	        if (status === google.maps.GeocoderStatus.OK) {
-	
-	          var lat = JSON.stringify(results[0].geometry.location.lat());
-	          var lng = JSON.stringify(results[0].geometry.location.lng());
-	          //
-	          // this.state.locStr = `${lat},${lng}`
-	
-	          this.setState({
-	            foundAddress: results[0].formatted_address,
-	            isGeocodingError: false,
-	            locStr: results[0].geometry.location.lat() + "," + results[0].geometry.location.lng()
-	          });
-	          console.log(this.state.locStr);
-	          return;
-	        }
-	
-	        this.setState({
-	          foundAddress: null,
-	          isGeocodingError: true
-	
-	        });
-	      });
-	    }
-	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
 	      var _this2 = this;
@@ -138,9 +110,8 @@
 	      };
 	      console.log('componentDidMount');
 	
-	      var locStr = location.lat + "," + location.lng;
 	      var url = 'https://api.foursquare.com/v2/venues/search?v=20161016&ll=' + locStr + '&client_id=XT1QFLKB4I2NPDXPKT1SUVXLOKQKPC4IDMKCHJIKRZEH0PHX&client_secret=PVWXPB34V1NTB1P41GHN1IHAS34RYOHCOIWT5YIFWROEY3LC';
-	
+	      console.log('superagent' + locStr);
 	      _superagent2.default.get(url).query(null).set('Accept', 'text/json').end(function (error, response) {
 	
 	        var venues = response.body.response.venues;
@@ -169,7 +140,7 @@
 	          _react2.default.createElement(_Map2.default, { center: location, markers: this.state.venues })
 	        ),
 	        _react2.default.createElement(_Places2.default, { venues: this.state.venues }),
-	        _react2.default.createElement(_Search2.default, { locStr: this.state.locStr, geocodeAddress: this.geocodeAddress() })
+	        _react2.default.createElement(_Results2.default, null)
 	      );
 	    }
 	  }]);
@@ -26337,70 +26308,158 @@
 	
 	var React = __webpack_require__(1);
 	
-	var INITIAL_LOCATION = {
-	  address: 'London, United Kingdom',
-	  position: {
-	    latitude: 51.5085300,
-	    longitude: -0.1257400
-	  }
-	};
-	
-	var INITIAL_MAP_ZOOM_LEVEL = 8;
-	
 	var Search = React.createClass({
-	  displayName: 'Search',
+		displayName: 'Search',
+	
+		onFormSubmit: function onFormSubmit(e) {
+			e.preventDefault();
+	
+			var address = this.refs.location.value;
+	
+			if (address.length > 0) {
+				this.refs.location.value = '';
+				this.props.onSearch(address);
+			}
+		},
+		render: function render() {
+			return React.createElement(
+				'div',
+				null,
+				React.createElement(
+					'form',
+					{ onSubmit: this.onFormSubmit },
+					React.createElement('input', { type: 'search', placeholder: 'Search things to do by city', ref: 'location' }),
+					React.createElement(
+						'button',
+						{ className: 'button expanded hollow' },
+						'Get Busy'
+					)
+				)
+			);
+		}
+	});
+	
+	module.exports = Search;
+
+/***/ },
+/* 217 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	var Search = __webpack_require__(216);
+	var Geocode = __webpack_require__(218);
+	
+	var Results = React.createClass({
+	  displayName: 'Results',
 	
 	
-	  handleFormSubmit: function handleFormSubmit(submitEvent) {
-	    submitEvent.preventDefault();
+	  getInitialState: function getInitialState() {
+	    return {
+	      isLoading: false,
+	      locStr: "25.7616798,-80.19179020000001",
+	      venues: [],
 	
-	    var address = this.searchInputElement.value;
-	
-	    this.props.geocodeAddress(address);
+	      isGeocodingError: false,
+	      foundAddress: undefined
+	    };
 	  },
 	
-	  setSearchInputElementReference: function setSearchInputElementReference(inputReference) {
-	    this.searchInputElement = inputReference;
+	  handleSearch: function handleSearch(address) {
+	    var that = this;
+	
+	    this.setState({
+	      isLoading: true,
+	      errorMessage: undefined,
+	      locStr: "25.7616798,-80.19179020000001",
+	      address: undefined
+	    });
+	
+	    Geocode.geocodeAddress(address).then(function (locStr) {
+	      that.setState({
+	        address: address,
+	        locStr: locStr,
+	        isLoading: false
+	      });
+	    }, function (e) {
+	      that.setState({
+	        isLoading: false,
+	        errorMessage: e.message
+	      });
+	    });
 	  },
 	
+	  componentDidMount: function componentDidMount() {
+	
+	    var address = this.props.location.query.location;
+	
+	    if (address && address.length > 0) {
+	      this.handleSearch(address);
+	      window.location.hash = '#/';
+	    }
+	  },
 	  render: function render() {
+	    var _state = this.state,
+	        isLoading = _state.isLoading,
+	        locStr = _state.locStr,
+	        address = _state.address,
+	        errorMessage = _state.errorMessage;
+	
+	
+	    function renderMessage() {
+	      if (isLoading) {
+	        return React.createElement(
+	          'h3',
+	          { className: 'text-center' },
+	          'Fetching Location...'
+	        );
+	      } else if (address) {
+	        return React.createElement(Results, { address: locStr });
+	      }
+	    }
 	    return React.createElement(
 	      'div',
 	      null,
 	      React.createElement(
-	        'form',
-	        { className: 'form-inline', onSubmit: this.handleFormSubmit },
-	        React.createElement(
-	          'div',
-	          { className: 'form-group' },
-	          React.createElement(
-	            'label',
-	            { className: 'sr-only', htmlFor: 'address' },
-	            'Address'
-	          ),
-	          React.createElement('input', { type: 'text', className: 'form-control input-lg', id: 'address', placeholder: 'London, United Kingdom', ref: this.setSearchInputElementReference, required: true })
-	        ),
-	        React.createElement('button', { type: 'submit', className: 'btn btn-default btn-lg' })
+	        'h1',
+	        { className: 'text-center page-title' },
+	        'Get Location'
 	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'row' },
-	        React.createElement(
-	          'div',
-	          { className: 'col-sm-12' },
-	          React.createElement(
-	            'p',
-	            null,
-	            ' ',
-	            this.props.locStr
-	          )
-	        )
-	      )
+	      React.createElement(Search, { onSearch: this.handleSearch }),
+	      renderMessage()
 	    );
 	  }
+	
 	});
 	
-	module.exports = Search;
+	module.exports = Results;
+
+/***/ },
+/* 218 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(1);
+	
+	module.exports = {
+	  geocodeAddress: function geocodeAddress(address) {
+	    this.geocoder = new google.maps.Geocoder();
+	    this.geocoder.geocode({ 'address': address }, function handleResults(results, status) {
+	
+	      if (status === google.maps.GeocoderStatus.OK) {
+	
+	        var lat = JSON.stringify(results[0].geometry.location.lat());
+	        var lng = JSON.stringify(results[0].geometry.location.lng());
+	        var locStr = lat + ',' + lng;
+	        console.log('this is from geocoder' + locStr);
+	
+	        return locStr;
+	      }
+	    });
+	  }
+	};
 
 /***/ }
 /******/ ]);
