@@ -26373,6 +26373,22 @@
 	    };
 	  },
 	
+	  geocodeAddress: function geocodeAddress(address) {
+	    this.geocoder = new google.maps.Geocoder();
+	    this.geocoder.geocode({ 'address': address }, function handleResults(results, status) {
+	
+	      if (status === google.maps.GeocoderStatus.OK) {
+	
+	        var lat = JSON.stringify(results[0].geometry.location.lat());
+	        var lng = JSON.stringify(results[0].geometry.location.lng());
+	        var locStr = lat + ',' + lng;
+	        console.log('this is from geocoder' + locStr);
+	
+	        return;
+	      }
+	    });
+	  },
+	
 	  handleSearch: function handleSearch(address) {
 	    var that = this;
 	
@@ -26380,19 +26396,21 @@
 	      isLoading: true
 	    });
 	
-	    Geocode.geocodeAddress(address).then(function (locStr) {
-	      console.log(locStr);
-	      this.setState({
-	        address: address,
-	        locStr: locStr,
-	        isLoading: false
-	      });
-	    }, function (e) {
-	      that.setState({
-	        isLoading: false,
-	        errorMessage: e.message
-	      });
-	    });
+	    this.geocodeAddress(address);
+	    console.log(locStr);
+	    // .then(function(locStr){
+	    //   console.log(locStr);
+	    //   this.setState({
+	    //     address: address,
+	    //     locStr: locStr,
+	    //     isLoading: false
+	    //   })
+	    // }, function(e) {
+	    //   that.setState({
+	    //     isLoading: false,
+	    //     errorMessage: e.message
+	    //   })
+	    // })
 	  },
 	
 	  componentDidMount: function componentDidMount() {
