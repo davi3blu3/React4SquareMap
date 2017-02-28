@@ -12,6 +12,7 @@ class App extends Component {
     super()
     this.state = {
       venues: [],
+      locStr: "25.7616798,-80.19179020000001"
     }
   }
   componentDidMount(){
@@ -22,9 +23,9 @@ class App extends Component {
       //   lng: -80.053325
       // }
     console.log('componentDidMount')
-    const url = `https://api.foursquare.com/v2/venues/search?v=20161016&ll=${locStr}&client_id=XT1QFLKB4I2NPDXPKT1SUVXLOKQKPC4IDMKCHJIKRZEH0PHX&client_secret=PVWXPB34V1NTB1P41GHN1IHAS34RYOHCOIWT5YIFWROEY3LC`
+    const url = `https://api.foursquare.com/v2/venues/search?v=20161016&ll=${this.state.locStr}&client_id=XT1QFLKB4I2NPDXPKT1SUVXLOKQKPC4IDMKCHJIKRZEH0PHX&client_secret=PVWXPB34V1NTB1P41GHN1IHAS34RYOHCOIWT5YIFWROEY3LC`
 
-    console.log('superagent' + locStr);
+    console.log('superagent' + this.state.locStr);
     superagent
       .get(url)
       .query(null)

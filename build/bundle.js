@@ -97,7 +97,8 @@
 	    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 	
 	    _this.state = {
-	      venues: []
+	      venues: [],
+	      locStr: "25.7616798,-80.19179020000001"
 	    };
 	    return _this;
 	  }
@@ -114,9 +115,9 @@
 	      //   lng: -80.053325
 	      // }
 	      console.log('componentDidMount');
-	      var url = 'https://api.foursquare.com/v2/venues/search?v=20161016&ll=' + locStr + '&client_id=XT1QFLKB4I2NPDXPKT1SUVXLOKQKPC4IDMKCHJIKRZEH0PHX&client_secret=PVWXPB34V1NTB1P41GHN1IHAS34RYOHCOIWT5YIFWROEY3LC';
+	      var url = 'https://api.foursquare.com/v2/venues/search?v=20161016&ll=' + this.state.locStr + '&client_id=XT1QFLKB4I2NPDXPKT1SUVXLOKQKPC4IDMKCHJIKRZEH0PHX&client_secret=PVWXPB34V1NTB1P41GHN1IHAS34RYOHCOIWT5YIFWROEY3LC';
 	
-	      console.log('superagent' + locStr);
+	      console.log('superagent' + this.state.locStr);
 	      _superagent2.default.get(url).query(null).set('Accept', 'text/json').end(function (error, response) {
 	
 	        var venues = response.body.response.venues;
@@ -26365,9 +26366,10 @@
 	      isLoading: false,
 	      locStr: "25.7616798,-80.19179020000001",
 	      venues: [],
-	
+	      errorMessage: undefined,
 	      isGeocodingError: false,
-	      foundAddress: undefined
+	      foundAddress: undefined,
+	      address: undefined
 	    };
 	  },
 	
@@ -26375,11 +26377,9 @@
 	    var that = this;
 	
 	    this.setState({
-	      isLoading: true,
-	      errorMessage: undefined,
-	      locStr: "25.7616798,-80.19179020000001",
-	      address: undefined
+	      isLoading: true
 	    });
+	
 	    Geocode.geocodeAddress(address).then(function (locStr) {
 	      console.log(locStr);
 	      this.setState({

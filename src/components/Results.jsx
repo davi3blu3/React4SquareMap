@@ -9,22 +9,20 @@ var Results = React.createClass({
       isLoading: false,
       locStr: "25.7616798,-80.19179020000001",
       venues: [],
-
+      errorMessage: undefined,
       isGeocodingError: false,
-      foundAddress: undefined
+      foundAddress: undefined,
+      address: undefined
     }
   },
 
   handleSearch: function(address){
 		var that = this;
 
-
 		this.setState({
-			isLoading: true,
-			errorMessage: undefined,
-			locStr: "25.7616798,-80.19179020000001",
-      address: undefined
+			isLoading: true
 		});
+
     Geocode.geocodeAddress(address).then(function(locStr){
       console.log(locStr);
       this.setState({
