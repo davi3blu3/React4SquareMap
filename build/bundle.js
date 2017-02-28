@@ -26377,19 +26377,22 @@
 	    this.geocoder = new google.maps.Geocoder();
 	    this.geocoder.geocode({ 'address': address }, function (results, status) {
 	
-	      return new Promise(function (resolve, reject) {
+	      if (status === google.maps.GeocoderStatus.OK) {
+	        var lat = JSON.stringify(results[0].geometry.location.lat());
+	        var lng = JSON.stringify(results[0].geometry.location.lng());
+	        var locStr = lat + ',' + lng;
+	        console.log('1. this is from geocoder' + locStr);
+	      };
+	    }).then(function (locStr) {
+	      console.log('2.', locStr);
 	
-	        if (status === google.maps.GeocoderStatus.OK) {
-	          var lat = JSON.stringify(results[0].geometry.location.lat());
-	          var lng = JSON.stringify(results[0].geometry.location.lng());
-	          var locStr = lat + ',' + lng;
-	          console.log('1. this is from geocoder' + locStr);
-	          resolve(locStr);
-	        } else {
-	          reject(error);
-	        };
-	      });
+	      // this.setState({
+	      //   address: address,
+	      //   locStr: locStr,
+	      //   isLoading: false
+	      // });
 	    });
+	    return this.geocoder.geocode;
 	  },
 	
 	  handleSearch: function handleSearch(address) {
@@ -26399,16 +26402,7 @@
 	      isLoading: true
 	    });
 	
-	    this.geocodeAddress(address).then(function (locStr) {
-	
-	      console.log('2.', locStr);
-	
-	      // this.setState({
-	      //   address: address,
-	      //   locStr: locStr,
-	      //   isLoading: false
-	      // });
-	    });
+	    this.geocodeAddress(address);
 	  },
 	
 	  componentDidMount: function componentDidMount() {
