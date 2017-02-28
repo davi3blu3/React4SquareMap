@@ -4,8 +4,7 @@ module.exports = {
   geocodeAddress: function (address) {
     this.geocoder = new google.maps.Geocoder();
     this.geocoder.geocode({ 'address': address },
-
-    function handleResults(results, status) {
+      function(results, status) {
 
       if (status === google.maps.GeocoderStatus.OK) {
 
@@ -14,7 +13,7 @@ module.exports = {
         var locStr = `${lat},${lng}`
         console.log('this is from geocoder' + locStr);
 
-      return;
+        return;
       }
     });
   }

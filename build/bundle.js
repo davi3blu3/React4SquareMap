@@ -26375,17 +26375,20 @@
 	
 	  geocodeAddress: function geocodeAddress(address) {
 	    this.geocoder = new google.maps.Geocoder();
-	    this.geocoder.geocode({ 'address': address }, function handleResults(results, status) {
+	    this.geocoder.geocode({ 'address': address }, function (results, status) {
 	
-	      if (status === google.maps.GeocoderStatus.OK) {
+	      return new Promise(function (resolve, reject) {
 	
-	        var lat = JSON.stringify(results[0].geometry.location.lat());
-	        var lng = JSON.stringify(results[0].geometry.location.lng());
-	        var locStr = lat + ',' + lng;
-	        console.log('this is from geocoder' + locStr);
-	
-	        return;
-	      }
+	        if (status === google.maps.GeocoderStatus.OK) {
+	          var lat = JSON.stringify(results[0].geometry.location.lat());
+	          var lng = JSON.stringify(results[0].geometry.location.lng());
+	          var locStr = lat + ',' + lng;
+	          console.log('1. this is from geocoder' + locStr);
+	          resolve(locStr);
+	        } else {
+	          reject(error);
+	        };
+	      });
 	    });
 	  },
 	
@@ -26396,21 +26399,16 @@
 	      isLoading: true
 	    });
 	
-	    this.geocodeAddress(address);
-	    console.log(locStr);
-	    // .then(function(locStr){
-	    //   console.log(locStr);
-	    //   this.setState({
-	    //     address: address,
-	    //     locStr: locStr,
-	    //     isLoading: false
-	    //   })
-	    // }, function(e) {
-	    //   that.setState({
-	    //     isLoading: false,
-	    //     errorMessage: e.message
-	    //   })
-	    // })
+	    this.geocodeAddress(address).then(function (locStr) {
+	
+	      console.log('2.', locStr);
+	
+	      // this.setState({
+	      //   address: address,
+	      //   locStr: locStr,
+	      //   isLoading: false
+	      // });
+	    });
 	  },
 	
 	  componentDidMount: function componentDidMount() {
@@ -26469,7 +26467,7 @@
 	module.exports = {
 	  geocodeAddress: function geocodeAddress(address) {
 	    this.geocoder = new google.maps.Geocoder();
-	    this.geocoder.geocode({ 'address': address }, function handleResults(results, status) {
+	    this.geocoder.geocode({ 'address': address }, function (results, status) {
 	
 	      if (status === google.maps.GeocoderStatus.OK) {
 	

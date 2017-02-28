@@ -18,20 +18,24 @@ var Results = React.createClass({
 
   geocodeAddress: function (address) {
     this.geocoder = new google.maps.Geocoder();
-    this.geocoder.geocode({ 'address': address },
+    this.geocoder.geocode({ 'address': address }, function(results, status) {
 
-    function handleResults(results, status) {
+      return new Promise( function(resolve, reject) {
 
-      if (status === google.maps.GeocoderStatus.OK) {
+        if (status === google.maps.GeocoderStatus.OK) {
+          var lat = JSON.stringify(results[0].geometry.location.lat());
+          var lng = JSON.stringify(results[0].geometry.location.lng());
+          var locStr = `${lat},${lng}`;
+          console.log('1. this is from geocoder' + locStr);
+          resolve(locStr);
+        } else {
+          reject(error);
+        };
 
-        var lat = JSON.stringify(results[0].geometry.location.lat());
-        var lng = JSON.stringify(results[0].geometry.location.lng());
-        var locStr = `${lat},${lng}`
-        console.log('this is from geocoder' + locStr);
+      })
 
-      return;
-      }
-    });
+
+    })
   },
 
   handleSearch: function(address){
@@ -42,21 +46,20 @@ var Results = React.createClass({
 		});
 
     this.geocodeAddress(address)
-    console.log(locStr);
-    // .then(function(locStr){
-    //   console.log(locStr);
-    //   this.setState({
-    //     address: address,
-    //     locStr: locStr,
-    //     isLoading: false
-    //   })
-    // }, function(e) {
-    //   that.setState({
-    //     isLoading: false,
-    //     errorMessage: e.message
-    //   })
-    // })
+      .then(function(locStr) {
+
+        console.log('2.', locStr);
+
+        // this.setState({
+        //   address: address,
+        //   locStr: locStr,
+        //   isLoading: false
+        // });
+
+      })
+
   },
+
 
   componentDidMount: function(){
 
